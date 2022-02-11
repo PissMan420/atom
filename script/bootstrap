@@ -20,10 +20,16 @@ process.on('unhandledRejection', function (e) {
 
 // We can't use yargs until installScriptDependencies() is executed, so...
 let ci = process.argv.indexOf('--ci') !== -1
+let yarn = process.argv.indexOf('--yarn') !== -1
+
 
 if (!ci && process.env.CI === 'true' && process.argv.indexOf('--no-ci') === -1) {
   console.log('Automatically enabling --ci because CI is set in the environment')
   ci = true
+}
+if (!yarn && process.env.YARN === 'true' && process.argv.indexOf('--no-yarn') === -1) {
+  yarn = true;
+  console.log('Automatically enabling --yarn because YARN is set in the environment')
 }
 
 verifyMachineRequirements(ci)
@@ -34,7 +40,7 @@ if (dependenciesFingerprint.isOutdated()) {
 
 if (process.platform === 'win32') deleteMsbuildFromPath()
 
-installScriptDependencies(ci)
+installScriptDependencies(ci, yarn)
 installApm(ci)
 const apmVersionEnv = Object.assign({}, process.env);
 // Set resource path so that apm can load Atom's version.
